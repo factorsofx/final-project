@@ -1,5 +1,7 @@
 from node import Output
 from oscillator import *
+from math_nodes import *
+from filter import *
 import wave
 import struct
 import math
@@ -18,15 +20,28 @@ def main():
     # Create a list to store all nodes in
     nodes = []
 
-    # Create intermediate nodes
-
-    # Main oscillator
-    oscillator = SineOscillatorNode()
+    # Create the main oscillator
+    oscillator = SquareOscillatorNode()
     nodes.append(oscillator)
     oscillator.set_input("freq", input_output)
 
+    # Create a low pass filter at twice the initial frequency
+    mult = MultiplicationNode()
+    two = ConstantNode(2)
+    filter = LowPassFilterNode()
+
+    nodes.append(mult)
+    nodes.append(two)
+    nodes.append(filter)
+
+    mult.set_input("a", two.get_output("value"))
+    mult.set_input("b", input_output)
+
+    filter.set_input("cutoff", mult.get_output("value"))
+    filter.set_input("value", oscillator.get_output("value"))
+
     # Set the output
-    output = oscillator.get_output("value")
+    output = filter.get_output("value")
 
     # Open audio file and set format
     output_wav = wave.open("output.wav", "wb")

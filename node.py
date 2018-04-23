@@ -1,5 +1,3 @@
-import pdb
-
 class Output:
     """
     A representation of an output of a module. To prevent the sound differing based on the order
@@ -42,7 +40,6 @@ class GraphNode:
             return 0
     
     def set_input(self, name, input):
-        pdb.set_trace()
         self.__inputs[name] = input
     
     def set_output(self, name, val):
@@ -53,7 +50,6 @@ class GraphNode:
 
     def get_output_value(self, name):
         if name in self.__outputs:
-            print(self.__outputs[name].val)
             return self.__outputs[name].val
         else:
             return 0
@@ -70,3 +66,11 @@ class GraphNode:
     def process(self, dt):
         """Update this node, with the given delta-t."""
         pass
+
+class TimeTrackingNode(GraphNode):
+    def __init__(self):
+        GraphNode.__init__(self)
+        self._t = 0
+    
+    def process(self, dt):
+        self._t += dt
