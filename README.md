@@ -42,6 +42,10 @@ Due to the lack of both a patch-saving system and time to actually create these,
 are no concrete examples available, but in theory the following systems would be quite
 simple to make.
 
+The setup present in `synthesizer.py` is a simple example of an LFO, where a low
+frequency oscillator controls the frequency of the oscillator actually outputting
+audio data.
+
 **Vocoder**  
 A vocoder takes the input, splits it into a number of different frequency bands, and
 applies the amplitude values of these bands to a different signal. To make a vocoder,
@@ -84,3 +88,12 @@ List of Available Concrete Module Types
  - `AdditionNode` - Adds its two inputs together
  - `MultiplicationNode` - Multiplies its two inputs together
  - `TanHLimiterNode` - Applies the `tanh` function to its input, constraining it between -1 and 1.
+ - `RootMeanSquareNode` - Takes the root mean square of the input, used to determine amplitude of a signal.
+ - `AudioInputNode` - Reads audio data from an external file and outputs it.
+
+Other Classes
+-------------
+
+ - `GraphNode` - The parent class of all the nodes, manages inputs and outputs
+ - `Output` - Responsible for actually carrying an old value and a new value, as described above
+ - `TimeTrackingNode` - Superclass of filters and oscillators, keeps track of the time elapsed
