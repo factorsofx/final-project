@@ -1,4 +1,5 @@
 from node import GraphNode
+import math
 
 class ConstantNode(GraphNode):
     def __init__(self, value):
@@ -17,3 +18,7 @@ class MultiplicationNode(GraphNode):
 class AdditionNode(GraphNode):
     def process(self, _):
         self.set_output("value", self.get_input("a") + self.get_input("b"))
+
+class TanHLimiterNode(GraphNode):
+    def process(self, _):
+        self.set_output("value", math.tanh(self.get_input("value")))

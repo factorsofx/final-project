@@ -8,7 +8,7 @@ import math
 
 def main():
     # Set initial parameters
-    target_freq = 440
+    target_freq = 233
     duration = 2
     sample_rate = 44100
 
@@ -21,27 +21,32 @@ def main():
     nodes = []
 
     # Create the main oscillator
-    oscillator = SquareOscillatorNode()
-    nodes.append(oscillator)
-    oscillator.set_input("freq", input_output)
+    
+    lfo = SineOscillatorNode()
+    lfo_freq = ConstantNode(2)
+    lfo_mult = MultiplicationNode()
+    lfo_const_val = ConstantNode(440)
+    lfo_add = AdditionNode()
 
-    # Create a low pass filter at twice the initial frequency
-    mult = MultiplicationNode()
-    two = ConstantNode(2)
-    filter = LowPassFilterNode()
+    osc = SquareOscillatorNode()
 
-    nodes.append(mult)
-    nodes.append(two)
-    nodes.append(filter)
+    nodes.append(lfo)
+    nodes.append(lfo_freq)
+    nodes.append(lfo_mult)
+    nodes.append(lfo_const_val)
+    nodes.append(lfo_add)
 
-    mult.set_input("a", two.get_output("value"))
-    mult.set_input("b", input_output)
+    nodes.append(osc)
 
-    filter.set_input("cutoff", mult.get_output("value"))
-    filter.set_input("value", oscillator.get_output("value"))
+    lfo.set_input("freq", lfo_freq.get_output("value"))
+    lfo_mult.set_input("a", lfo.get_output("value"))
+    lfo_mult.set_input("b", lfo_const_val.get_output("value"))
+    lfo_add.set_input("a", lfo_mult.get_output("value"))
+    lfo_add.set_input("b", lfo_const_val.get_output("value"))
+    osc.set_input("freq", lfo_add.get_output("value"))
 
     # Set the output
-    output = filter.get_output("value")
+    output = osc.get_output("value")
 
     # Open audio file and set format
     output_wav = wave.open("output.wav", "wb")
@@ -57,7 +62,7 @@ def main():
         for node in nodes:
             node.update_outputs()
         
-        sample = struct.pack("h", int(output.val * 16384))
+        sample = struct.pack("h", int(output.val * 32767))
         output_wav.writeframes(sample)
     
     output_wav.close()
